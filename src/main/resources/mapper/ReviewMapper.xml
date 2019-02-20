@@ -70,7 +70,7 @@
 
     </update>
     
-    <delete id="deletePhoto" parameterType="com.example.demo.vo.ReviewPhotoVO">
+    <delete id="deletePhoto" parameterType="String">
     	DELETE
     	FROM ATTACHED_PHOTO
     	WHERE

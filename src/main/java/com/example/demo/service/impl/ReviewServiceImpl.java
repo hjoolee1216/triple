@@ -79,11 +79,13 @@ public class ReviewServiceImpl implements ReviewService {
 		System.out.println(review.getAttachedPhotoIds().length);
 		if(review.getAttachedPhotoIds().length>0) {
 			ReviewPhotoVO photoVO = null;
+			
+			reviewMapper.deletePhoto(review.getReviewId());
 			for(int i=0; i<review.getAttachedPhotoIds().length; i++) {
 				photoVO = new ReviewPhotoVO();
 				photoVO.setPhoto(review.getAttachedPhotoIds()[i]);
 				photoVO.setReviewId(review.getReviewId());
-				reviewMapper.deletePhoto(photoVO);
+				
 				reviewMapper.insertPhoto(photoVO);
 			}
 		}

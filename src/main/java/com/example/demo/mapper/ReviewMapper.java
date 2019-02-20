@@ -25,5 +25,5 @@ public interface ReviewMapper {
 
 	void insertPhoto(ReviewPhotoVO photoVO);
 
-	void deletePhoto(ReviewPhotoVO photoVO);
+	void deletePhoto(String reviewId);
 }
