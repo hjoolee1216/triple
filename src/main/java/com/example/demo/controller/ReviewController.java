@@ -15,7 +15,6 @@ import io.swagger.annotations.ApiOperation;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +33,7 @@ public class ReviewController {
     public MemberResponse add(@RequestBody ReviewDTO review) throws Exception {
         int point = 0;
         MemberReviewVO memberReviewVO = null;
-        if(review.getType().equals(Constant.ADD)) {
+        if(review.getAction().equals(Constant.ADD)) {
         	memberReviewVO = reviewService.getUserReviewByPlaceId(review);
         	if(memberReviewVO == null) {
         		if(review.getContent().length() > 0) {
@@ -43,36 +42,36 @@ public class ReviewController {
         		
         	}
         	
-        	if(review.getAttchedPhotoIds().length > 0) {
+        	if(review.getAttachedPhotoIds().length > 0) {
         		point++;
         	}
         	if(firstPlaceReview(review.getPlaceId())) {
         		point++;
         	}
         	
-        	
         } else if(review.getType().equals(Constant.DELETE)) {
-        	memberReviewVO = reviewService.getUserReviewByReviewId(review.getReviewId());
+        	memberReviewVO = reviewService.getUserReviewByReviewId(review);
         	if(memberReviewVO != null) {
         		deleteMemberPoint(memberReviewVO.getPoint(), review);
         	}
         } else {
-        	memberReviewVO = reviewService.getUserReviewByReviewId(review.getReviewId());
-        	if(review.getAttchedPhotoIds().length > memberReviewVO.getPhoto().size()) {
+        	memberReviewVO = reviewService.getUserReviewByReviewId(review);
+        	if(review.getAttachedPhotoIds().length > memberReviewVO.getPhoto().size()) {
         		point++;
         	} else {
         		deleteMemberPoint(1, review);
         	}
         	
         }
-        
-        reviewService.addReviewPoint(point, review);
+        review.setPoint(point);
+        reviewService.addReviewPoint(review);
         return MemberResponse.builder().code("200").msg("success").build();
     }
 
 
 	private void deleteMemberPoint(int point, ReviewDTO review) {
-		reviewService.deleteReviewPoint(point, review);
+		review.setPoint(point);
+		reviewService.deleteReviewPoint(review);
 	}
 
 

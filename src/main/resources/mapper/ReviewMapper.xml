@@ -1,33 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mapper.org//DTD Mapper 3.0//EN" "org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.ReviewMapper">
-    <insert id="insertMember">
-        INSERT INTO MEMBER
-        (email, pw, type)
+    <insert id="insertPhoto" parameterType="com.example.demo.vo.ReviewPhotoVO">
+        INSERT INTO ATTACHED_PHOTO
+        (REVIEW_ID, PHOTO)
         VALUES
-        (#{email}
-        ,#{password}
-        ,#{memberType}
+        (#{reviewId}
+        ,#{photo}
         )
+    </insert>
+    
+    <insert id="insertReview" parameterType="com.example.demo.dto.ReviewDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO REVIEW
+        (REVIEW_ID, USER_ID, CONTENT, PLACE_ID, REG_DATE, MOD_DATE, DEL_YN)
+        VALUES
+        (#{reviewId}
+        ,#{userId}
+        ,#{content}
+        ,#{placeId}
+        ,NOW()
+        ,NOW()
+        ,0
+        )
+        ON DUPLICATE KEY UPDATE CONTENT = #{content}, MOD_DATE = NOW()
     </insert>
     
     <select id="selectUserReviewByPlaceId" resultType="com.example.demo.vo.MemberReviewVO" parameterType="com.example.demo.dto.ReviewDTO">
         SELECT
         REVIEW_ID as reviewId,
-        CONTENT AS content,
-        PHOTO AS photo,
+        CONTENT AS content
         FROM REVIEW
-        WHERE placeId = #{placeId}
+        WHERE PLACE_ID = #{placeId}
+        AND USER_ID = #{userId}
 
     </select>
     
-     <select id="selectMemberInfo" resultType="com.example.demo.vo.MemberInfoVO" parameterType="map">
+     <select id="selectAllReviewByPlaceId" resultType="int" parameterType="String">
         SELECT
-        email email,
-        type type,
-        pw as password
-        FROM MEMBER
-        WHERE email = #{email}
+        COUNT(*) 
+        FROM REVIEW
+        WHERE PLACE_ID = #{placeId}
 
     </select>
+    
+    <select id="selectUserReviewByReviewId" resultType="com.example.demo.vo.MemberReviewVO" parameterType="com.example.demo.dto.ReviewDTO">
+        SELECT
+        REVIEW_ID as reviewId,
+        CONTENT AS content,
+        USER_ID AS userId,
+        PLACE_ID AS placeId
+        FROM REVIEW
+        WHERE REVIEW_ID = #{reviewId}
+
+    </select>
+    
+     <select id="selectAllPhoto" resultType="String" parameterType="com.example.demo.dto.ReviewDTO">
+        SELECT
+        PHOTO
+        FROM ATTACHED_PHOTO
+        WHERE REVIEW_ID = #{reviewId}
+
+    </select>
+    
+    <update id="deleteReview" parameterType="com.example.demo.dto.ReviewDTO">
+        UPDATE
+        REVIEW
+        SET del_yn = 1, mod_date = NOW()
+        WHERE REVIEW_ID = #{reviewId}
+
+    </update>
+    
+    <delete id="deletePhoto" parameterType="com.example.demo.vo.ReviewPhotoVO">
+    	DELETE
+    	FROM ATTACHED_PHOTO
+    	WHERE
+    	REVIEW_ID = #{reviewId}
+    
+    </delete>
 </mapper>

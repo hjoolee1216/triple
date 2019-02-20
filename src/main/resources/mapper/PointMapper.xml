@@ -1,32 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mapper.org//DTD Mapper 3.0//EN" "org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.PointMapper">
-    <select id="selectAllCarList" resultType="com.example.demo.vo.CarVO">
-        
+    <select id="selectMemberPointLog" resultType="com.example.demo.vo.UserPointLogVO" parameterType="String">
+        SELECT
+        user_id as userId,
+        point as point,
+        (CASE WHEN TYPE='I'
+        THEN 'IN'
+        ELSE 'OUT'
+        END) AS pointType,
+        reg_date as regDate
+        FROM 
+        MEMBER_POINT_LOG
+        WHERE USER_ID = #{userId}
+        ORDER BY REGDATE DESC
     </select>
     
-    <insert id="insertCall" parameterType="map">
+    <select id="selectMemberPoint" resultType="com.example.demo.vo.UserPointVO" parameterType="String">
+        SELECT
+        user_id as userId,
+        current_point as currentPoint,
+        accum_point as accumPoint,
+        delete_point as deletePoint
+        FROM 
+        MEMBER_POINT_STATE
+        WHERE USER_ID = #{userId}
+    </select>
+    
+    <insert id="insertMemberPoint" parameterType="com.example.demo.dto.ReviewDTO">
+    	INSERT INTO MEMBER_POINT_STATE
+    	(user_id, current_point, accum_point, delete_point, reg_date, mod_date )
+    	VALUES
+    	(#{userId}
+    	,#{point}
+    	,#{point}
+    	,'0'
+    	,NOW()
+    	,NOW()
+    	)
+    	ON DUPLICATE KEY UPDATE CURRENT_POINT = CURRENT_POINT + #{point},
+    	ACCUM_POINT = ACCUM_POINT + #{point}, MOD_DATE = NOW()
     	
     
     </insert>
     
+    <insert id="insertMemberPointLog" parameterType="com.example.demo.dto.ReviewDTO">
+    	INSERT INTO MEMBER_POINT_LOG
+    	(user_id, point, type, reg_date)
+    	VALUES
+    	(#{userId}
+    	,#{point}
+    	,'I'
+    	,NOW()
+    	)
+    	
+    </insert>
     
-    <select id="selectCallByReqid" resultType="String" parameterType="String">
-        
-       	 
-    </select>
     
-    <update id="updateCallInfo" parameterType="map">
-        UPDATE CALL
+    <insert id="deleteMemberPointLog" parameterType="com.example.demo.dto.ReviewDTO">
+    	INSERT INTO MEMBER_POINT_LOG
+    	(user_id, point, type, reg_date)
+    	VALUES
+    	(#{userId}
+    	,#{point}
+    	,'O'
+    	,NOW()
+    	)
+    	
+    </insert>
+    
+    <update id="deleteReviewPoint" parameterType="com.example.demo.dto.ReviewDTO">
+        UPDATE MEMBER_POINT_STATE
         SET		
-        callYn = 1
-        ,endDate = NOW()
-        ,driver = #{driver}
-        ,status = '001' 
+        CURRENT_POINT = CURRENT_POINT - #{point}
+        ,DELETE_POINT = DELETE_POINT + #{point}
+        ,MOD_DATE = NOW()
+         
        	WHERE 
-       	email = #{email}
-       	AND 
-       	reqid = #{reqid}
+       	USER_ID = #{userId}
+       
        	 
     </update>
  </mapper>

@@ -14,15 +14,14 @@ public interface ReviewService {
 
 	int getAllReviewByPlaceId(String placeId);
 
-	MemberReviewVO getUserReviewByReviewId(String reviewId);
+	MemberReviewVO getUserReviewByReviewId(ReviewDTO review);
 
-	void deleteReviewPoint(int point, ReviewDTO review);
+	void deleteReviewPoint(ReviewDTO review);
 
 	UserPointVO getMemberPoint(String userId);
 
-	void addReviewPoint(int point, ReviewDTO review);
+	void addReviewPoint(ReviewDTO review);
 
 	List<UserPointLogVO> getMemberPointLog(String userId);
 
-	void addUserReview(ReviewDTO review);
 }

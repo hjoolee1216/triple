@@ -6,15 +6,15 @@ import com.example.demo.mapper.PointMapper;
 import com.example.demo.mapper.ReviewMapper;
 import com.example.demo.service.ReviewService;
 import com.example.demo.vo.MemberReviewVO;
+import com.example.demo.vo.ReviewPhotoVO;
 import com.example.demo.vo.UserPointLogVO;
 import com.example.demo.vo.UserPointVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -28,7 +28,11 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public MemberReviewVO getUserReviewByPlaceId(ReviewDTO review) {
 		
-		return reviewMapper.selectUserReviewByPlaceId(review);
+		MemberReviewVO reviewVO = reviewMapper.selectUserReviewByPlaceId(review);
+		if(reviewVO != null) {
+			reviewVO.setPhoto(reviewMapper.selectAllPhoto(review));
+		}
+		return reviewVO;
 	}
 
 
@@ -40,18 +44,23 @@ public class ReviewServiceImpl implements ReviewService {
 
 
 	@Override
-	public MemberReviewVO getUserReviewByReviewId(String reviewId) {
+	public MemberReviewVO getUserReviewByReviewId(ReviewDTO review) {
 		
-		return reviewMapper.selectUserReviewByReviewId(reviewId);
+		MemberReviewVO reviewVO = reviewMapper.selectUserReviewByReviewId(review);
+		if(reviewVO != null) {
+			reviewVO.setPhoto(reviewMapper.selectAllPhoto(review));
+		}
+		
+		return reviewVO;
 	}
 
-
+	@Transactional
 	@Override
-	public void deleteReviewPoint(int point, ReviewDTO review) {
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("point", point);
-		params.put("reviewId", review.getReviewId());
-		reviewMapper.deleteReviewPoint(params);
+	public void deleteReviewPoint(ReviewDTO review) {
+		
+		pointMapper.deleteReviewPoint(review);
+		pointMapper.deleteMemberPointLog(review);
+		reviewMapper.deleteReview(review);
 		
 	}
 
@@ -63,9 +72,25 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 
+	@Transactional
 	@Override
-	public void addReviewPoint(int point, ReviewDTO review) {
-		
+	public void addReviewPoint(ReviewDTO review) {
+		reviewMapper.insertReview(review);
+		System.out.println(review.getAttachedPhotoIds().length);
+		if(review.getAttachedPhotoIds().length>0) {
+			ReviewPhotoVO photoVO = null;
+			for(int i=0; i<review.getAttachedPhotoIds().length; i++) {
+				photoVO = new ReviewPhotoVO();
+				photoVO.setPhoto(review.getAttachedPhotoIds()[i]);
+				photoVO.setReviewId(review.getReviewId());
+				reviewMapper.deletePhoto(photoVO);
+				reviewMapper.insertPhoto(photoVO);
+			}
+		}
+		if(review.getId() > 0) {
+			pointMapper.insertMemberPoint(review);
+			pointMapper.insertMemberPointLog(review);
+		}
 		
 	}
 
@@ -76,9 +101,5 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 
-	@Override
-	public void addUserReview(ReviewDTO review) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
