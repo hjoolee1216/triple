@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mapper.org//DTD Mapper 3.0//EN" "org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ReviewMapper">
+    <insert id="insertMember">
+        INSERT INTO MEMBER
+        (email, pw, type)
+        VALUES
+        (#{email}
+        ,#{password}
+        ,#{memberType}
+        )
+    </insert>
+    
+    <select id="selectUserReviewByPlaceId" resultType="com.example.demo.vo.MemberReviewVO" parameterType="com.example.demo.dto.ReviewDTO">
+        SELECT
+        REVIEW_ID as reviewId,
+        CONTENT AS content,
+        PHOTO AS photo,
+        FROM REVIEW
+        WHERE placeId = #{placeId}
+
+    </select>
+    
+     <select id="selectMemberInfo" resultType="com.example.demo.vo.MemberInfoVO" parameterType="map">
+        SELECT
+        email email,
+        type type,
+        pw as password
+        FROM MEMBER
+        WHERE email = #{email}
+
+    </select>
+</mapper>

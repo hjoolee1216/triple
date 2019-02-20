@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mapper.org//DTD Mapper 3.0//EN" "org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.PointMapper">
+    <select id="selectAllCarList" resultType="com.example.demo.vo.CarVO">
+        
+    </select>
+    
+    <insert id="insertCall" parameterType="map">
+    	
+    
+    </insert>
+    
+    
+    <select id="selectCallByReqid" resultType="String" parameterType="String">
+        
+       	 
+    </select>
+    
+    <update id="updateCallInfo" parameterType="map">
+        UPDATE CALL
+        SET		
+        callYn = 1
+        ,endDate = NOW()
+        ,driver = #{driver}
+        ,status = '001' 
+       	WHERE 
+       	email = #{email}
+       	AND 
+       	reqid = #{reqid}
+       	 
+    </update>
+ </mapper>
