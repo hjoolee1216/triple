@@ -24,4 +24,6 @@ public interface ReviewService {
 
 	List<UserPointLogVO> getMemberPointLog(String userId);
 
+	void deleteReview(ReviewDTO review);
+
 }

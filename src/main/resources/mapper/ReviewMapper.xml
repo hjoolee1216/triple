@@ -23,6 +23,10 @@
         ,0
         )
         ON DUPLICATE KEY UPDATE CONTENT = #{content}, MOD_DATE = NOW()
+        
+        <selectKey resultType="int" keyProperty="id" order="AFTER">
+        SELECT COUNT(*) FROM REVIEW WHERE REVIEW_ID = #{reviewId}        
+    	</selectKey>    
     </insert>
     
     <select id="selectUserReviewByPlaceId" resultType="com.example.demo.vo.MemberReviewVO" parameterType="com.example.demo.dto.ReviewDTO">

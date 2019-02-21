@@ -48,23 +48,29 @@ public class ReviewController {
         	if(firstPlaceReview(review.getPlaceId())) {
         		point++;
         	}
+        	review.setPoint(point);
+            reviewService.addReviewPoint(review);
         	
-        } else if(review.getType().equals(Constant.DELETE)) {
+        } else if(review.getType().equals(Constant.DEL)) {
         	memberReviewVO = reviewService.getUserReviewByReviewId(review);
         	if(memberReviewVO != null) {
         		deleteMemberPoint(memberReviewVO.getPoint(), review);
+        		reviewService.deleteReview(review);
         	}
         } else {
         	memberReviewVO = reviewService.getUserReviewByReviewId(review);
-        	if(review.getAttachedPhotoIds().length > memberReviewVO.getPhoto().size()) {
-        		point++;
-        	} else {
-        		deleteMemberPoint(1, review);
+        	if(memberReviewVO != null) {
+	        	if(review.getAttachedPhotoIds().length > memberReviewVO.getPhoto().size()) {
+	        		point++;
+	        		review.setPoint(point);
+	                reviewService.addReviewPoint(review);
+	        	} else {
+	        		deleteMemberPoint(1, review);
+	        		
+	        	}
         	}
-        	
         }
-        review.setPoint(point);
-        reviewService.addReviewPoint(review);
+        
         return MemberResponse.builder().code("200").msg("success").build();
     }
 

@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 		
 		pointMapper.deleteReviewPoint(review);
 		pointMapper.deleteMemberPointLog(review);
-		reviewMapper.deleteReview(review);
+		
 		
 	}
 
@@ -76,7 +76,6 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void addReviewPoint(ReviewDTO review) {
 		reviewMapper.insertReview(review);
-		System.out.println(review.getAttachedPhotoIds().length);
 		if(review.getAttachedPhotoIds().length>0) {
 			ReviewPhotoVO photoVO = null;
 			
@@ -100,6 +99,13 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public List<UserPointLogVO> getMemberPointLog(String userId) {
 		return pointMapper.selectMemberPointLog(userId);
+	}
+
+
+	@Override
+	public void deleteReview(ReviewDTO review) {
+		reviewMapper.deleteReview(review);
+		
 	}
 
 
